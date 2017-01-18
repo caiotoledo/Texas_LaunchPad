@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -7,8 +8,10 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/pwm.h"
 #include "PWM_RGB.h"
+#include "UART_Utils.h"
+#include "Button_Utils.h"
 
-#define	COLOR_FACTOR	10
+#define	COLOR_FACTOR	20
 #define COLOR_MIN		16
 #define COLOR_MAX		223
 
@@ -25,6 +28,12 @@ int main(void) {
 	LED_init(RED_LED, 64000, rColor);
 	LED_init(BLUE_LED, 64000, gColor);
 	LED_init(GREEN_LED, 64000, bColor);
+
+	configureUART();
+
+	UARTprintf("Começou!\n");
+
+	Button_init();
 
 	while (1){
 		SysCtlDelay(600000);
@@ -79,5 +88,16 @@ int main(void) {
 				break;
 		}
 		setRGB(rColor, gColor, bColor);
+
+		ButtonState bState;
+		bState = ButtonRead(ButtonSW1);
+		if (bState == stateOn) {
+			UARTprintf("SW1 Pressed!");
+		}
+
+		bState = ButtonRead(ButtonSW2);
+		if (bState == stateOn) {
+			UARTprintf("SW2 Pressed!");
+		}
 	}
 }
